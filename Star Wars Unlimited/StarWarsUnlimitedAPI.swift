@@ -15,36 +15,57 @@ class StarWarsUnlimitedAPI: ObservableObject {
     @Published var errorMessage: String?
     
     private let baseURL = "https://api.swu-db.com/cards/search"
-    private let sets = ["SOR", "SHD", "TWI", "JTL", "LOF", "IBH"]
+    private let sets = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
 
     func fetchAllCards() async {
         isLoading = true
         errorMessage = nil
 
         do {
-            var allCards: [Card] = []
+            // Récupérer toutes les cartes en parallèle avec TaskGroup
+            let allCards = try await withThrowingTaskGroup(of: [Card].self) { group in
+                // Lancer toutes les requêtes en parallèle
+                for setCode in sets {
+                    group.addTask {
+                        let urlString = "\(self.baseURL)?q=set:\(setCode.lowercased())"
+                        guard let url = URL(string: urlString) else {
+                            throw APIError.invalidURL
+                        }
 
-            // Récupérer les cartes de chaque set
-            for setCode in sets {
-                let urlString = "\(baseURL)?q=set:\(setCode.lowercased())"
-                guard let url = URL(string: urlString) else {
-                    throw APIError.invalidURL
+                        let (data, response) = try await URLSession.shared.data(from: url)
+
+                        guard let httpResponse = response as? HTTPURLResponse,
+                              httpResponse.statusCode == 200 else {
+                            throw APIError.invalidResponse
+                        }
+
+                        let cardResponse = try JSONDecoder().decode(CardResponse.self, from: data)
+                        print("Loaded \(setCode): \(cardResponse.data.count) cards")
+                        return cardResponse.data
+                    }
                 }
 
-                let (data, response) = try await URLSession.shared.data(from: url)
-
-                guard let httpResponse = response as? HTTPURLResponse,
-                      httpResponse.statusCode == 200 else {
-                    throw APIError.invalidResponse
+                // Collecter tous les résultats
+                var cards: [Card] = []
+                for try await setCards in group {
+                    cards.append(contentsOf: setCards)
                 }
-
-                let cardResponse = try JSONDecoder().decode(CardResponse.self, from: data)
-                allCards.append(contentsOf: cardResponse.data)
-
-                print("Loaded \(setCode): \(cardResponse.data.count) cards (Total: \(allCards.count))")
+                return cards
             }
 
-            self.cards = allCards.sorted { $0.name < $1.name }
+            // Trier par set d'abord, puis par numéro de carte
+            self.cards = allCards.sorted { card1, card2 in
+                if card1.set != card2.set {
+                    // Ordre des sets : du plus récent au plus ancien
+                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
+                    let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
+                    return index1 < index2
+                }
+                // Si même set, trier par numéro
+                return card1.cardNumber < card2.cardNumber
+            }
+            print("Total cards loaded: \(allCards.count)")
 
         } catch {
             self.errorMessage = error.localizedDescription
@@ -77,7 +98,16 @@ class StarWarsUnlimitedAPI: ObservableObject {
             }
 
             let cardResponse = try JSONDecoder().decode(CardResponse.self, from: data)
-            self.cards = cardResponse.data.sorted { $0.name < $1.name }
+            // Trier par set puis par numéro
+            self.cards = cardResponse.data.sorted { card1, card2 in
+                if card1.set != card2.set {
+                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
+                    let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
+                    return index1 < index2
+                }
+                return card1.cardNumber < card2.cardNumber
+            }
 
         } catch {
             self.errorMessage = error.localizedDescription
@@ -109,7 +139,16 @@ class StarWarsUnlimitedAPI: ObservableObject {
             }
 
             let cardResponse = try JSONDecoder().decode(CardResponse.self, from: data)
-            self.cards = cardResponse.data.sorted { $0.name < $1.name }
+            // Trier par set puis par numéro
+            self.cards = cardResponse.data.sorted { card1, card2 in
+                if card1.set != card2.set {
+                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
+                    let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
+                    return index1 < index2
+                }
+                return card1.cardNumber < card2.cardNumber
+            }
 
         } catch {
             self.errorMessage = error.localizedDescription

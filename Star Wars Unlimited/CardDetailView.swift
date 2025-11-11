@@ -14,7 +14,7 @@ struct CardDetailView: View {
     @State private var isFlipped = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     // Image principale
@@ -83,7 +83,7 @@ struct CardDetailView: View {
                             InfoRow(label: "Type", value: card.typeDisplay)
                             InfoRow(label: "Ensemble", value: card.set)
                             InfoRow(label: "Numéro", value: card.cardNumber)
-                            InfoRow(label: "Rareté", value: card.rarity.capitalized)
+                            InfoRow(label: "Rareté", value: rarityTranslation(for: card.rarity))
                             
                             if !card.aspectDisplay.isEmpty {
                                 InfoRow(label: "Aspects", value: card.aspectDisplay)
@@ -166,6 +166,17 @@ struct CardDetailView: View {
             }
         }
     }
+
+    private func rarityTranslation(for rarity: String) -> String {
+        switch rarity.lowercased() {
+        case "common": return "Commune"
+        case "uncommon": return "Peu commune"
+        case "rare": return "Rare"
+        case "legendary": return "Légendaire"
+        case "special": return "Spéciale"
+        default: return rarity.capitalized
+        }
+    }
 }
 
 struct CardInfoSection<Content: View>: View {
@@ -209,7 +220,7 @@ struct InfoRow: View {
         cardNumber: "016",
         name: "Luke Skywalker",
         subtitle: "Faithful Friend",
-        type: "Unit",
+        type: "Unités",
         aspects: ["Heroism"],
         traits: ["Force", "Rebel"],
         arenas: ["Ground"],

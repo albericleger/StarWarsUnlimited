@@ -123,10 +123,29 @@ extension Card {
     }
     
     var typeDisplay: String {
-        type
+        switch type {
+        case "Leader": return "Leaders"
+        case "Unit": return "Unité"
+        case "Event": return "Événement"
+        case "Upgrade": return "Amélioration"
+        case "Base": return "Base"
+        default: return type
+        }
     }
 
     var aspectDisplay: String {
-        aspects?.joined(separator: " • ") ?? ""
+        guard let aspects = aspects else { return "" }
+        let translatedAspects = aspects.map { aspect in
+            switch aspect {
+            case "Aggression": return "Agressivité"
+            case "Command": return "Commandement"
+            case "Cunning": return "Ruse"
+            case "Heroism": return "Héroïsme"
+            case "Vigilance": return "Vigilance"
+            case "Villainy": return "Infâmie"
+            default: return aspect
+            }
+        }
+        return translatedAspects.joined(separator: " • ")
     }
 }

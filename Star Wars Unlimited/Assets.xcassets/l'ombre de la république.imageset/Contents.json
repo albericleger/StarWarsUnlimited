@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "large_SWH_03_Social_1080x1920_bbe9bad131.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "large_SWH_03_Social_1080x1920_bbe9bad131 1.jpg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "large_SWH_03_Social_1080x1920_bbe9bad131 2.jpg",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

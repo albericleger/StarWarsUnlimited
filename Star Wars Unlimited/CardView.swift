@@ -9,26 +9,103 @@ import SwiftUI
 
 struct CardView: View {
     let card: Card
-    
+    var isChecked: Bool = false
+    var quantity: Int = 0
+    var style: CardStyle = .normal
+    var onInfoTap: (() -> Void)?
+    var onIncrement: (() -> Void)?
+    var onDecrement: (() -> Void)?
+    var onStyleTap: (() -> Void)?
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Image de la carte
-            AsyncImage(url: URL(string: card.frontArt ?? "")) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } placeholder: {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
-                    .aspectRatio(0.7, contentMode: .fit)
-                    .overlay {
-                        Image(systemName: "photo")
-                            .font(.largeTitle)
-                            .foregroundColor(.gray)
+            ZStack(alignment: .topLeading) {
+                AsyncImage(url: URL(string: card.frontArt ?? "")) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.3))
+                        .aspectRatio(0.7, contentMode: .fit)
+                        .overlay {
+                            Image(systemName: "photo")
+                                .font(.largeTitle)
+                                .foregroundColor(.gray)
+                        }
+                }
+                .frame(maxHeight: 200)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                // Bouton info en haut à gauche
+                if let onInfoTap = onInfoTap {
+                    Button(action: onInfoTap) {
+                        Image(systemName: "info.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                            .background(Circle().fill(Color.blue))
+                            .shadow(radius: 2)
                     }
+                    .padding(8)
+                }
             }
-            .frame(maxHeight: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(alignment: .topTrailing) {
+                // Style et checkmark en haut à droite
+                if isChecked {
+                    HStack(spacing: 4) {
+                        if let onStyleTap = onStyleTap {
+                            Button(action: onStyleTap) {
+                                Text(style.icon)
+                                    .font(.title3)
+                                    .padding(6)
+                                    .background(Circle().fill(Color.white.opacity(0.9)))
+                                    .shadow(radius: 2)
+                            }
+                        }
+
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.green)
+                            .background(Circle().fill(Color.white))
+                            .shadow(radius: 2)
+                    }
+                    .padding(8)
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if isChecked, let onIncrement = onIncrement, let onDecrement = onDecrement {
+                    HStack(spacing: 12) {
+                        Button(action: onDecrement) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .background(Circle().fill(Color.red))
+                                .shadow(radius: 3)
+                        }
+
+                        Text("\(quantity)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .frame(minWidth: 30)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.orange)
+                            .clipShape(Capsule())
+                            .shadow(radius: 3)
+
+                        Button(action: onIncrement) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .background(Circle().fill(Color.green))
+                                .shadow(radius: 3)
+                        }
+                    }
+                    .padding(.bottom, 8)
+                }
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 // Nom de la carte
@@ -49,23 +126,10 @@ struct CardView: View {
                         .font(.caption)
                         .foregroundColor(.blue)
                 }
-                
-                // Stats
-                HStack {
-                    if card.cost != nil {
-                        StatView(label: "Coût", value: card.costDisplay, color: .orange)
-                    }
-                    if card.power != nil {
-                        StatView(label: "Force", value: card.powerDisplay, color: .red)
-                    }
-                    if card.hp != nil {
-                        StatView(label: "PV", value: card.hpDisplay, color: .green)
-                    }
-                }
-                
+
                 // Rareté
                 HStack {
-                    Text(card.rarity.capitalized)
+                    Text(rarityTranslation(for: card.rarity))
                         .font(.caption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
@@ -115,6 +179,17 @@ struct CardView: View {
         default: return .primary
         }
     }
+
+    private func rarityTranslation(for rarity: String) -> String {
+        switch rarity.lowercased() {
+        case "common": return "Commune"
+        case "uncommon": return "Peu commune"
+        case "rare": return "Rare"
+        case "legendary": return "Légendaire"
+        case "special": return "Spéciale"
+        default: return rarity.capitalized
+        }
+    }
 }
 
 struct StatView: View {
@@ -135,29 +210,38 @@ struct StatView: View {
 }
 
 #Preview {
-    CardView(card: Card(
-        set: "SOR",
-        cardNumber: "016",
-        name: "Luke Skywalker",
-        subtitle: "Faithful Friend",
-        type: "Unit",
-        aspects: ["Heroism"],
-        traits: ["Force", "Rebel"],
-        arenas: ["Ground"],
-        cost: "6",
-        power: "4",
-        hp: "7",
-        frontText: "When Played: You may attack with a unit. It deals +2 damage for this attack.",
-        backText: nil,
-        epicAction: nil,
-        doubleSided: false,
-        backArt: nil,
-        rarity: "Legendary",
-        unique: true,
-        keywords: [],
-        artist: "Artist Name",
-        frontArt: nil,
-        marketPrice: "5.00"
-    ))
+    CardView(
+        card: Card(
+            set: "SOR",
+            cardNumber: "016",
+            name: "Luke Skywalker",
+            subtitle: "Faithful Friend",
+            type: "Unités",
+            aspects: ["Heroism"],
+            traits: ["Force", "Rebel"],
+            arenas: ["Ground"],
+            cost: "6",
+            power: "4",
+            hp: "7",
+            frontText: "When Played: You may attack with a unit. It deals +2 damage for this attack.",
+            backText: nil,
+            epicAction: nil,
+            doubleSided: false,
+            backArt: nil,
+            rarity: "Legendary",
+            unique: true,
+            keywords: [],
+            artist: "Artist Name",
+            frontArt: nil,
+            marketPrice: "5.00"
+        ),
+        isChecked: true,
+        quantity: 3,
+        style: .hyperspace,
+        onInfoTap: { print("Info tapped") },
+        onIncrement: { print("Increment") },
+        onDecrement: { print("Decrement") },
+        onStyleTap: { print("Style tapped") }
+    )
     .frame(width: 200)
 }

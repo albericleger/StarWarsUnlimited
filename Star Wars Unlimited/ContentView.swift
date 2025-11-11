@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var api = StarWarsUnlimitedAPI()
+    @EnvironmentObject private var api: StarWarsUnlimitedAPI
+    @EnvironmentObject private var checkedCardsManager: CheckedCardsManager
     @State private var searchText = ""
     @State private var selectedCard: Card?
     @State private var showingCardDetail = false
-    @State private var selectedFilters: Set<FilterOption> = []
+    @State private var selectedFilters: Set<FilterOption> = [.leaders]
     @State private var selectedSets: Set<SetOption> = []
     @State private var selectedAspects: Set<AspectOption> = []
     @State private var showingFilterSheet = false
+    @State private var showingStylePicker = false
+    @State private var cardForStyleChange: Card?
+    @State private var showingPriceSheet = false
 
     enum FilterOption: String, CaseIterable, Hashable {
         case leaders = "Leaders"
@@ -36,32 +40,32 @@ struct ContentView: View {
     }
 
     enum SetOption: String, CaseIterable, Hashable {
-        case sor = "SOR"
-        case shd = "SHD"
-        case twi = "TWI"
-        case jtl = "JTL"
-        case lof = "LOF"
         case ibh = "IBH"
+        case lof = "LOF"
+        case jtl = "JTL"
+        case twi = "TWI"
+        case shd = "SHD"
+        case sor = "SOR"
 
         var fullName: String {
             switch self {
-            case .sor: return "L'Étincelle de la Rébellion"
+            case .sor: return "Étincelle de la Rébellion"
             case .shd: return "Les Ombres de la Galaxie"
-            case .twi: return "Le Crépuscule de la République"
-            case .jtl: return "Saut vers la Vitesse Lumière"
-            case .lof: return "Le Repaire du Père"
-            case .ibh: return "Glace et Trahison"
+            case .twi: return "Crépuscule de la République"
+            case .jtl: return "Passage Vitesse Lumière"
+            case .lof: return "Légende de la force"
+            case .ibh: return "Combat d'introduction:Hot"
             }
         }
     }
 
     enum AspectOption: String, CaseIterable, Hashable {
-        case aggression = "Aggression"
-        case command = "Command"
-        case cunning = "Cunning"
-        case heroism = "Heroism"
+        case aggression = "Agressivité"
+        case command = "Commandement"
+        case cunning = "Ruse"
+        case heroism = "Heroïsme"
         case vigilance = "Vigilance"
-        case villainy = "Villainy"
+        case villainy = "Infâmie"
 
         var displayName: String {
             switch self {
@@ -70,7 +74,7 @@ struct ContentView: View {
             case .cunning: return "🟡 Ruse"
             case .heroism: return "🔵 Héroïsme"
             case .vigilance: return "⚪️ Vigilance"
-            case .villainy: return "⚫️ Vilenie"
+            case .villainy: return "⚫️ Infâmie"
             }
         }
     }
@@ -124,8 +128,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
                 // Barre de recherche et bouton filtres
                 HStack(spacing: 12) {
                     SearchBar(text: $searchText)
@@ -199,11 +202,32 @@ struct ContentView: View {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(filteredCards) { card in
-                                CardView(card: card)
-                                    .onTapGesture {
+                                CardView(
+                                    card: card,
+                                    isChecked: checkedCardsManager.isChecked(card.id),
+                                    quantity: checkedCardsManager.getQuantity(card.id),
+                                    style: checkedCardsManager.getStyle(card.id),
+                                    onInfoTap: {
                                         selectedCard = card
                                         showingCardDetail = true
+                                    },
+                                    onIncrement: {
+                                        checkedCardsManager.incrementQuantity(card.id)
+                                    },
+                                    onDecrement: {
+                                        checkedCardsManager.decrementQuantity(card.id)
+                                    },
+                                    onStyleTap: {
+                                        cardForStyleChange = card
+                                        showingStylePicker = true
                                     }
+                                )
+                                .onTapGesture {
+                                    // Tap sur la carte : cocher/décocher
+                                    if !checkedCardsManager.isChecked(card.id) {
+                                        checkedCardsManager.toggleCard(card.id)
+                                    }
+                                }
                             }
                         }
                         .padding()
@@ -213,6 +237,49 @@ struct ContentView: View {
             .navigationTitle("Star Wars Unlimited")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !checkedCardsManager.checkedCards.isEmpty {
+                        Menu {
+                            Button(action: {
+                                showingPriceSheet = true
+                            }) {
+                                Label("Voir les prix détaillés", systemImage: "dollarsign.circle")
+                            }
+
+                            Divider()
+
+                            Button(role: .destructive, action: {
+                                checkedCardsManager.clearAll()
+                            }) {
+                                Label("Tout supprimer", systemImage: "trash")
+                            }
+                        } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                        .font(.caption)
+                                    Text("\(checkedCardsManager.totalCards) carte\(checkedCardsManager.totalCards > 1 ? "s" : "")")
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                }
+
+                                let totalPrice = checkedCardsManager.getTotalPrice(cards: api.cards)
+                                if totalPrice > 0 {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "dollarsign.circle.fill")
+                                            .foregroundColor(.orange)
+                                            .font(.caption)
+                                        Text(String(format: "%.2f€", totalPrice))
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         Task {
@@ -224,12 +291,6 @@ struct ContentView: View {
                     .disabled(api.isLoading)
                 }
             }
-        }
-        .task {
-            if api.cards.isEmpty {
-                await api.fetchAllCards()
-            }
-        }
         .sheet(isPresented: $showingCardDetail) {
             if let card = selectedCard {
                 CardDetailView(card: card)
@@ -241,6 +302,21 @@ struct ContentView: View {
                 selectedAspects: $selectedAspects,
                 selectedFilters: $selectedFilters
             )
+        }
+        .sheet(isPresented: $showingStylePicker) {
+            if let card = cardForStyleChange {
+                StylePickerSheet(
+                    card: card,
+                    currentStyle: checkedCardsManager.getStyle(card.id),
+                    onStyleSelected: { newStyle in
+                        checkedCardsManager.setStyle(card.id, style: newStyle)
+                        showingStylePicker = false
+                    }
+                )
+            }
+        }
+        .sheet(isPresented: $showingPriceSheet) {
+            PriceBreakdownSheet()
         }
     }
 }
@@ -279,7 +355,7 @@ struct FilterSheet: View {
     @Binding var selectedFilters: Set<ContentView.FilterOption>
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // Section Sets
                 Section("Extensions") {
@@ -383,4 +459,6 @@ struct MultiSelectRow: View {
 
 #Preview {
     ContentView()
+        .environmentObject(StarWarsUnlimitedAPI())
+        .environmentObject(CheckedCardsManager())
 }
