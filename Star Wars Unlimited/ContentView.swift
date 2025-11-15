@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var api: StarWarsUnlimitedAPI
     @EnvironmentObject private var checkedCardsManager: CheckedCardsManager
+    @EnvironmentObject private var filterManager: FilterManager
     @State private var searchText = ""
     @State private var selectedCard: Card?
     @State private var showingCardDetail = false
@@ -82,7 +83,29 @@ struct ContentView: View {
     private let columns = [
         GridItem(.adaptive(minimum: 180), spacing: 16)
     ]
-    
+
+    // Charger les filtres sauvegardés
+    private func loadSavedFilters() {
+        selectedFilters = Set(filterManager.selectedTypes.compactMap { typeString in
+            FilterOption.allCases.first { $0.apiFilter == typeString }
+        })
+
+        selectedSets = Set(filterManager.selectedSets.compactMap { setString in
+            SetOption.allCases.first { $0.rawValue == setString }
+        })
+
+        selectedAspects = Set(filterManager.selectedAspects.compactMap { aspectString in
+            AspectOption.allCases.first { $0.rawValue == aspectString }
+        })
+    }
+
+    // Sauvegarder les filtres
+    private func saveFilters() {
+        filterManager.updateTypes(Set(selectedFilters.map { $0.apiFilter }))
+        filterManager.updateSets(Set(selectedSets.map { $0.rawValue }))
+        filterManager.updateAspects(Set(selectedAspects.map { $0.rawValue }))
+    }
+
     var filteredCards: [Card] {
         var cards = api.cards
 
@@ -318,6 +341,15 @@ struct ContentView: View {
         .sheet(isPresented: $showingPriceSheet) {
             PriceBreakdownSheet()
         }
+        .onAppear {
+            loadSavedFilters()
+        }
+        .onChange(of: showingFilterSheet) { _, isShowing in
+            if !isShowing {
+                // Sauvegarder quand la feuille de filtres se ferme
+                saveFilters()
+            }
+        }
     }
 }
 
@@ -461,4 +493,5 @@ struct MultiSelectRow: View {
     ContentView()
         .environmentObject(StarWarsUnlimitedAPI())
         .environmentObject(CheckedCardsManager())
+        .environmentObject(FilterManager())
 }

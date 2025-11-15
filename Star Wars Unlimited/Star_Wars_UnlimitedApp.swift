@@ -11,6 +11,7 @@ import SwiftUI
 struct Star_Wars_UnlimitedApp: App {
     @StateObject private var api = StarWarsUnlimitedAPI()
     @StateObject private var checkedCardsManager = CheckedCardsManager()
+    @StateObject private var filterManager = FilterManager()
 
     var body: some Scene {
         WindowGroup {
@@ -19,6 +20,7 @@ struct Star_Wars_UnlimitedApp: App {
             }
             .environmentObject(api)
             .environmentObject(checkedCardsManager)
+            .environmentObject(filterManager)
             .task {
                 // Pré-chargement des cartes au démarrage de l'application
                 if api.cards.isEmpty {

@@ -30,6 +30,14 @@ struct First: View {
                     .background(Color.blue)
                     .cornerRadius(10)
             }
+            NavigationLink(destination: EchangeView()) {
+                Text("échanges")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
         }
         .padding()
     }
@@ -40,5 +48,6 @@ struct First: View {
         First()
             .environmentObject(StarWarsUnlimitedAPI())
             .environmentObject(CheckedCardsManager())
+            .environmentObject(FilterManager())
     }
 }
