@@ -1,26 +1,26 @@
 //
-//  PriceBreakdownSheet.swift
+//  ExchangePriceBreakdownSheet.swift
 //  Star Wars Unlimited
 //
-//  Created by Albéric Léger on 11/11/2025.
+//  Created by Albéric Léger on 16/11/2025.
 //
 
 import SwiftUI
 
-struct PriceBreakdownSheet: View {
+struct ExchangePriceBreakdownSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var api: StarWarsUnlimitedAPI
-    @EnvironmentObject private var checkedCardsManager: CheckedCardsManager
+    let exchangeCardsManager: ExchangeCardsManager
 
     private var cardsBySet: [(set: String, cards: [Card])] {
-        let checkedCards = api.cards.filter { checkedCardsManager.isChecked($0.id) }
+        let checkedCards = api.cards.filter { exchangeCardsManager.isChecked($0.id) }
         let grouped = Dictionary(grouping: checkedCards, by: { $0.set })
         return grouped.map { (set: $0.key, cards: $0.value.sorted { $0.cardNumber < $1.cardNumber }) }
             .sorted { $0.set < $1.set }
     }
 
     private var totalPrice: Double {
-        checkedCardsManager.getTotalPrice(cards: api.cards)
+        exchangeCardsManager.getTotalPrice(cards: api.cards)
     }
 
     var body: some View {
@@ -51,10 +51,10 @@ struct PriceBreakdownSheet: View {
                 ForEach(cardsBySet, id: \.set) { setGroup in
                     Section(header: Text(setDisplayName(setGroup.set))) {
                         ForEach(setGroup.cards) { card in
-                            CardPriceRow(
+                            ExchangeCardPriceRow(
                                 card: card,
-                                quantity: checkedCardsManager.getQuantity(card.id),
-                                style: checkedCardsManager.getStyle(card.id)
+                                quantity: exchangeCardsManager.getQuantity(card.id),
+                                style: exchangeCardsManager.getStyle(card.id)
                             )
                         }
                     }
@@ -106,7 +106,7 @@ struct PriceBreakdownSheet: View {
     }
 }
 
-struct CardPriceRow: View {
+struct ExchangeCardPriceRow: View {
     let card: Card
     let quantity: Int
     let style: CardStyle
@@ -173,8 +173,7 @@ struct CardPriceRow: View {
 
 #Preview {
     NavigationStack {
-        PriceBreakdownSheet()
+        ExchangePriceBreakdownSheet(exchangeCardsManager: ExchangeCardsManager())
             .environmentObject(StarWarsUnlimitedAPI())
-            .environmentObject(CheckedCardsManager())
     }
 }

@@ -23,7 +23,8 @@ struct Star_Wars_UnlimitedApp: App {
             .environmentObject(filterManager)
             .task {
                 // Pré-chargement des cartes au démarrage de l'application
-                if api.cards.isEmpty {
+                // Rafraîchir si vide ou si les prix sont obsolètes (> 6h)
+                if api.cards.isEmpty || api.shouldUpdate() {
                     await api.fetchAllCards()
                 }
             }

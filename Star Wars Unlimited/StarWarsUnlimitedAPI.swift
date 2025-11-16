@@ -13,9 +13,37 @@ class StarWarsUnlimitedAPI: ObservableObject {
     @Published var cards: [Card] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+    @Published var lastUpdated: Date?
+
     private let baseURL = "https://api.swu-db.com/cards/search"
     private let sets = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+    private let updateIntervalHours: Double = 6 // Rafraîchir toutes les 6 heures
+
+    init() {
+        loadLastUpdateDate()
+    }
+
+    // Charger la date de dernière mise à jour
+    private func loadLastUpdateDate() {
+        if let timestamp = UserDefaults.standard.object(forKey: "lastCardsUpdate") as? Date {
+            lastUpdated = timestamp
+        }
+    }
+
+    // Sauvegarder la date de dernière mise à jour
+    private func saveLastUpdateDate() {
+        lastUpdated = Date()
+        UserDefaults.standard.set(lastUpdated, forKey: "lastCardsUpdate")
+    }
+
+    // Vérifier si une mise à jour est nécessaire
+    func shouldUpdate() -> Bool {
+        guard let lastUpdate = lastUpdated else {
+            return true // Pas de mise à jour précédente
+        }
+        let hoursSinceUpdate = Date().timeIntervalSince(lastUpdate) / 3600
+        return hoursSinceUpdate >= updateIntervalHours
+    }
 
     func fetchAllCards() async {
         isLoading = true
@@ -66,6 +94,10 @@ class StarWarsUnlimitedAPI: ObservableObject {
                 return card1.cardNumber < card2.cardNumber
             }
             print("Total cards loaded: \(allCards.count)")
+
+            // Sauvegarder la date de mise à jour
+            saveLastUpdateDate()
+            print("💰 Prix mis à jour: \(Date())")
 
         } catch {
             self.errorMessage = error.localizedDescription
