@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct EchangeView2: View {
+struct EchangeView3: View {
     @EnvironmentObject private var api: StarWarsUnlimitedAPI
-    @StateObject private var exchangeCardsManager = ExchangeCardsManager()
+    @StateObject private var exchangePlayer2Manager = ExchangePlayer2Manager()
     @EnvironmentObject private var filterManager: FilterManager
     @State private var searchText = ""
     @State private var selectedCard: Card?
@@ -154,7 +154,7 @@ struct EchangeView2: View {
         VStack(spacing: 0) {
                 // Barre de recherche et bouton filtres
                 HStack(spacing: 12) {
-                    EchangeSearchBar(text: $searchText)
+                    EchangeSearchBar3(text: $searchText)
 
                     Button(action: {
                         showingFilterSheet = true
@@ -227,18 +227,18 @@ struct EchangeView2: View {
                             ForEach(filteredCards) { card in
                                 CardView(
                                     card: card,
-                                    isChecked: exchangeCardsManager.isChecked(card.id),
-                                    quantity: exchangeCardsManager.getQuantity(card.id),
-                                    style: exchangeCardsManager.getStyle(card.id),
+                                    isChecked: exchangePlayer2Manager.isChecked(card.id),
+                                    quantity: exchangePlayer2Manager.getQuantity(card.id),
+                                    style: exchangePlayer2Manager.getStyle(card.id),
                                     onInfoTap: {
                                         selectedCard = card
                                         showingCardDetail = true
                                     },
                                     onIncrement: {
-                                        exchangeCardsManager.incrementQuantity(card.id)
+                                        exchangePlayer2Manager.incrementQuantity(card.id)
                                     },
                                     onDecrement: {
-                                        exchangeCardsManager.decrementQuantity(card.id)
+                                        exchangePlayer2Manager.decrementQuantity(card.id)
                                     },
                                     onStyleTap: {
                                         cardForStyleChange = card
@@ -247,8 +247,8 @@ struct EchangeView2: View {
                                 )
                                 .onTapGesture {
                                     // Tap sur la carte : cocher/décocher
-                                    if !exchangeCardsManager.isChecked(card.id) {
-                                        exchangeCardsManager.toggleCard(card.id)
+                                    if !exchangePlayer2Manager.isChecked(card.id) {
+                                        exchangePlayer2Manager.toggleCard(card.id)
                                     }
                                 }
                             }
@@ -257,11 +257,11 @@ struct EchangeView2: View {
                     }
                 }
             }
-            .navigationTitle("Joueur 1")
+            .navigationTitle("Joueur 2")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if !exchangeCardsManager.checkedCards.isEmpty {
+                    if !exchangePlayer2Manager.checkedCards.isEmpty {
                         Menu {
                             Button(action: {
                                 showingPriceSheet = true
@@ -272,7 +272,7 @@ struct EchangeView2: View {
                             Divider()
 
                             Button(role: .destructive, action: {
-                                exchangeCardsManager.clearAll()
+                                exchangePlayer2Manager.clearAll()
                             }) {
                                 Label("Tout supprimer", systemImage: "trash")
                             }
@@ -282,12 +282,12 @@ struct EchangeView2: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
                                         .font(.caption)
-                                    Text("\(exchangeCardsManager.totalCards) carte\(exchangeCardsManager.totalCards > 1 ? "s" : "")")
+                                    Text("\(exchangePlayer2Manager.totalCards) carte\(exchangePlayer2Manager.totalCards > 1 ? "s" : "")")
                                         .font(.caption)
                                         .fontWeight(.bold)
                                 }
 
-                                let totalPrice = exchangeCardsManager.getTotalPrice(cards: api.cards)
+                                let totalPrice = exchangePlayer2Manager.getTotalPrice(cards: api.cards)
                                 if totalPrice > 0 {
                                     HStack(spacing: 4) {
                                         Image(systemName: "dollarsign.circle.fill")
@@ -320,7 +320,7 @@ struct EchangeView2: View {
             }
         }
         .sheet(isPresented: $showingFilterSheet) {
-            EchangeFilterSheet(
+            EchangeFilterSheet3(
                 selectedSets: $selectedSets,
                 selectedAspects: $selectedAspects,
                 selectedFilters: $selectedFilters
@@ -330,16 +330,16 @@ struct EchangeView2: View {
             if let card = cardForStyleChange {
                 StylePickerSheet(
                     card: card,
-                    currentStyle: exchangeCardsManager.getStyle(card.id),
+                    currentStyle: exchangePlayer2Manager.getStyle(card.id),
                     onStyleSelected: { newStyle in
-                        exchangeCardsManager.setStyle(card.id, style: newStyle)
+                        exchangePlayer2Manager.setStyle(card.id, style: newStyle)
                         showingStylePicker = false
                     }
                 )
             }
         }
         .sheet(isPresented: $showingPriceSheet) {
-            ExchangePriceBreakdownSheet(manager: exchangeCardsManager)
+            ExchangePriceBreakdownSheet(manager: exchangePlayer2Manager)
         }
         .onAppear {
             loadSavedFilters()
@@ -353,17 +353,17 @@ struct EchangeView2: View {
     }
 }
 
-struct EchangeSearchBar: View {
+struct EchangeSearchBar3: View {
     @Binding var text: String
 
     var body: some View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.gray)
-            
+
             TextField("Rechercher des cartes...", text: $text)
                 .textFieldStyle(PlainTextFieldStyle())
-            
+
             if !text.isEmpty {
                 Button(action: {
                     text = ""
@@ -380,19 +380,19 @@ struct EchangeSearchBar: View {
     }
 }
 
-struct EchangeFilterSheet: View {
+struct EchangeFilterSheet3: View {
     @Environment(\.dismiss) private var dismiss
-    @Binding var selectedSets: Set<EchangeView2.SetOption>
-    @Binding var selectedAspects: Set<EchangeView2.AspectOption>
-    @Binding var selectedFilters: Set<EchangeView2.FilterOption>
+    @Binding var selectedSets: Set<EchangeView3.SetOption>
+    @Binding var selectedAspects: Set<EchangeView3.AspectOption>
+    @Binding var selectedFilters: Set<EchangeView3.FilterOption>
 
     var body: some View {
         NavigationStack {
             List {
                 // Section Sets
                 Section("Extensions") {
-                    ForEach(EchangeView2.SetOption.allCases, id: \.self) { set in
-                        EchangeMultiSelectRow(
+                    ForEach(EchangeView3.SetOption.allCases, id: \.self) { set in
+                        EchangeMultiSelectRow3(
                             title: set.rawValue,
                             subtitle: set.fullName,
                             isSelected: selectedSets.contains(set)
@@ -408,8 +408,8 @@ struct EchangeFilterSheet: View {
 
                 // Section Aspects (Couleurs)
                 Section("Aspects") {
-                    ForEach(EchangeView2.AspectOption.allCases, id: \.self) { aspect in
-                        EchangeMultiSelectRow(
+                    ForEach(EchangeView3.AspectOption.allCases, id: \.self) { aspect in
+                        EchangeMultiSelectRow3(
                             title: aspect.displayName,
                             subtitle: nil,
                             isSelected: selectedAspects.contains(aspect)
@@ -425,8 +425,8 @@ struct EchangeFilterSheet: View {
 
                 // Section Types
                 Section("Types de cartes") {
-                    ForEach(EchangeView2.FilterOption.allCases, id: \.self) { filter in
-                        EchangeMultiSelectRow(
+                    ForEach(EchangeView3.FilterOption.allCases, id: \.self) { filter in
+                        EchangeMultiSelectRow3(
                             title: filter.rawValue,
                             subtitle: nil,
                             isSelected: selectedFilters.contains(filter)
@@ -460,7 +460,7 @@ struct EchangeFilterSheet: View {
     }
 }
 
-struct EchangeMultiSelectRow: View {
+struct EchangeMultiSelectRow3: View {
     let title: String
     let subtitle: String?
     let isSelected: Bool
@@ -491,7 +491,7 @@ struct EchangeMultiSelectRow: View {
 
 #Preview {
     NavigationStack {
-        EchangeView2()
+        EchangeView3()
             .environmentObject(StarWarsUnlimitedAPI())
             .environmentObject(FilterManager())
     }

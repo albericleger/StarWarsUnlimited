@@ -7,20 +7,20 @@
 
 import SwiftUI
 
-struct ExchangePriceBreakdownSheet: View {
+struct ExchangePriceBreakdownSheet<Manager: ExchangeManagerProtocol>: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var api: StarWarsUnlimitedAPI
-    let exchangeCardsManager: ExchangeCardsManager
+    @ObservedObject var manager: Manager
 
     private var cardsBySet: [(set: String, cards: [Card])] {
-        let checkedCards = api.cards.filter { exchangeCardsManager.isChecked($0.id) }
+        let checkedCards = api.cards.filter { manager.isChecked($0.id) }
         let grouped = Dictionary(grouping: checkedCards, by: { $0.set })
         return grouped.map { (set: $0.key, cards: $0.value.sorted { $0.cardNumber < $1.cardNumber }) }
             .sorted { $0.set < $1.set }
     }
 
     private var totalPrice: Double {
-        exchangeCardsManager.getTotalPrice(cards: api.cards)
+        manager.getTotalPrice(cards: api.cards)
     }
 
     var body: some View {
@@ -53,8 +53,8 @@ struct ExchangePriceBreakdownSheet: View {
                         ForEach(setGroup.cards) { card in
                             ExchangeCardPriceRow(
                                 card: card,
-                                quantity: exchangeCardsManager.getQuantity(card.id),
-                                style: exchangeCardsManager.getStyle(card.id)
+                                quantity: manager.getQuantity(card.id),
+                                style: manager.getStyle(card.id)
                             )
                         }
                     }
@@ -173,7 +173,7 @@ struct ExchangeCardPriceRow: View {
 
 #Preview {
     NavigationStack {
-        ExchangePriceBreakdownSheet(exchangeCardsManager: ExchangeCardsManager())
+        ExchangePriceBreakdownSheet(manager: ExchangeCardsManager())
             .environmentObject(StarWarsUnlimitedAPI())
     }
 }
