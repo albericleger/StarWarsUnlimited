@@ -38,9 +38,9 @@ struct EchangeView: View {
 
         GeometryReader { geometry in
             ZStack {
-                // Ligne verticale centrale orange
+                // Ligne verticale centrale
                 Rectangle()
-                    .fill(Color.blue)
+                    .fill(Color.gray.opacity(0.2))
                     .frame(width: 3)
                     .position(
                         x: geometry.size.width / 2,
