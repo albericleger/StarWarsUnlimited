@@ -16,7 +16,7 @@ class StarWarsUnlimitedAPI: ObservableObject {
     @Published var lastUpdated: Date?
 
     private let baseURL = "https://api.swu-db.com/cards/search"
-    private let sets = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+    private let sets = ["SEC", "IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
     private let updateIntervalHours: Double = 6 // Rafraîchir toutes les 6 heures
 
     init() {
@@ -85,7 +85,7 @@ class StarWarsUnlimitedAPI: ObservableObject {
             self.cards = allCards.sorted { card1, card2 in
                 if card1.set != card2.set {
                     // Ordre des sets : du plus récent au plus ancien
-                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let setOrder = ["SEC", "IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
                     let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
                     let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
                     return index1 < index2
@@ -133,7 +133,7 @@ class StarWarsUnlimitedAPI: ObservableObject {
             // Trier par set puis par numéro
             self.cards = cardResponse.data.sorted { card1, card2 in
                 if card1.set != card2.set {
-                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let setOrder = ["SEC", "IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
                     let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
                     let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
                     return index1 < index2
@@ -174,7 +174,7 @@ class StarWarsUnlimitedAPI: ObservableObject {
             // Trier par set puis par numéro
             self.cards = cardResponse.data.sorted { card1, card2 in
                 if card1.set != card2.set {
-                    let setOrder = ["IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
+                    let setOrder = ["SEC", "IBH", "LOF", "JTL", "TWI", "SHD", "SOR"]
                     let index1 = setOrder.firstIndex(of: card1.set) ?? Int.max
                     let index2 = setOrder.firstIndex(of: card2.set) ?? Int.max
                     return index1 < index2

@@ -41,6 +41,7 @@ struct ContentView: View {
     }
 
     enum SetOption: String, CaseIterable, Hashable {
+        case sec = "SEC"
         case ibh = "IBH"
         case lof = "LOF"
         case jtl = "JTL"
@@ -50,6 +51,7 @@ struct ContentView: View {
 
         var fullName: String {
             switch self {
+            case .sec: return "Secret du Pouvoir"
             case .sor: return "Étincelle de la Rébellion"
             case .shd: return "Les Ombres de la Galaxie"
             case .twi: return "Crépuscule de la République"

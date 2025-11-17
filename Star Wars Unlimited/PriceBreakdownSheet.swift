@@ -95,6 +95,7 @@ struct PriceBreakdownSheet: View {
 
     private func setDisplayName(_ setCode: String) -> String {
         switch setCode {
+        case "SEC": return "Secret du Pouvoir"
         case "SOR": return "Étincelle de la Rébellion"
         case "SHD": return "Les Ombres de la Galaxie"
         case "TWI": return "Crépuscule de la République"

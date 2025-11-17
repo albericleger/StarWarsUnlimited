@@ -14,9 +14,19 @@ struct ClasseurView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                
                 // SOR - Mars 2024 (premier set)
                 NavigationLink(destination: Hot()) {
                     Image("Hot")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(10)
+                        .shadow(radius: 4)
+                }
+                .padding(.horizontal)
+                
+                NavigationLink(destination: SecretView()) {
+                    Image("secret")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .cornerRadius(10)
