@@ -40,7 +40,7 @@ struct EchangeView: View {
             ZStack {
                 // Ligne verticale centrale orange
                 Rectangle()
-                    .fill(Color.orange)
+                    .fill(Color.blue)
                     .frame(width: 3)
                     .position(
                         x: geometry.size.width / 2,
@@ -234,7 +234,32 @@ struct CompactCardRectangle: View {
             .fill(Color.orange)
             .frame(height: 80)
             .overlay(
-                HStack {
+                HStack(spacing: 8) {
+                    // Image de la carte
+                    if let frontArt = card.frontArt, let imageURL = URL(string: frontArt) {
+                        AsyncImage(url: imageURL) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(width: 50, height: 70)
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .foregroundColor(.white.opacity(0.5))
+                                    .frame(width: 50, height: 70)
+                            @unknown default:
+                                Color.gray.opacity(0.3)
+                            }
+                        }
+                        .frame(width: 50, height: 70)
+                        .cornerRadius(4)
+                        .clipped()
+                        .padding(.leading, 4)
+                    }
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text(card.name)
                             .font(.caption)
@@ -258,7 +283,6 @@ struct CompactCardRectangle: View {
                                 .foregroundColor(.white)
                         }
                     }
-                    .padding(6)
 
                     Spacer()
 
@@ -270,7 +294,7 @@ struct CompactCardRectangle: View {
                             .font(.caption2)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
-                            .padding(6)
+                            .padding(.trailing, 6)
                     }
                 }
             )
