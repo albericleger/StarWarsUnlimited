@@ -55,8 +55,18 @@ struct EchangeView: View {
                             NavigationLink(destination: EchangeView2()) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.blue)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [AppTheme.primaryBlue, AppTheme.primaryBlue.opacity(0.7)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
                                         .frame(width: 60, height: 60)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                                        )
 
                                     VStack(spacing: 2) {
                                         Image(systemName: "person.fill")
@@ -71,7 +81,7 @@ struct EchangeView: View {
                                             .foregroundColor(.white)
                                     }
                                 }
-                                .shadow(radius: 4)
+                                .shadow(color: AppTheme.primaryBlue.opacity(0.5), radius: 8, y: 4)
                             }
 
                             if player1Manager.totalCards > 0 {
@@ -125,8 +135,18 @@ struct EchangeView: View {
                             NavigationLink(destination: EchangeView3()) {
                                 ZStack {
                                     Circle()
-                                        .fill(Color.green)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [AppTheme.primaryGreen, AppTheme.primaryGreen.opacity(0.7)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
                                         .frame(width: 60, height: 60)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                                        )
 
                                     VStack(spacing: 2) {
                                         Image(systemName: "person.fill")
@@ -141,7 +161,7 @@ struct EchangeView: View {
                                             .foregroundColor(.white)
                                     }
                                 }
-                                .shadow(radius: 4)
+                                .shadow(color: AppTheme.primaryGreen.opacity(0.5), radius: 8, y: 4)
                             }
 
                             if player2Manager.totalCards > 0 {
@@ -193,30 +213,66 @@ struct EchangeView: View {
                 if player1Manager.totalCards > 0 || player2Manager.totalCards > 0 {
                     VStack {
                         Spacer()
-                        VStack(spacing: 8) {
+                        VStack(spacing: 10) {
                             if difference > 0 {
                                 Text(whoOwesWhom)
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white.opacity(0.8))
                                 Text(String(format: "%.2f€", difference))
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.orange)
+                                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [AppTheme.accentOrange, .yellow],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .shadow(color: AppTheme.accentOrange.opacity(0.5), radius: 10)
                             } else {
-                                HStack(spacing: 4) {
+                                HStack(spacing: 8) {
                                     Image(systemName: "checkmark.circle.fill")
+                                        .font(.title)
                                         .foregroundColor(.green)
                                     Text("Échange équilibré")
-                                        .font(.headline)
-                                        .foregroundColor(.green)
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
                                 }
                             }
                         }
-                        .padding()
-                        .background(Color(.systemBackground).opacity(0.95))
-                        .cornerRadius(12)
-                        .shadow(radius: 8)
-                        .padding(.bottom, 20)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.black.opacity(0.7),
+                                            Color.black.opacity(0.5)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color.white.opacity(0.3),
+                                                    Color.white.opacity(0.1)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
+                        .shadow(color: .black.opacity(0.4), radius: 20, y: 10)
+                        .padding(.bottom, 30)
+                        .padding(.horizontal, 20)
                     }
                 }
             }
@@ -230,74 +286,93 @@ struct CompactCardRectangle: View {
     let style: CardStyle
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.orange)
-            .frame(height: 80)
-            .overlay(
-                HStack(spacing: 8) {
-                    // Image de la carte
-                    if let frontArt = card.frontArt, let imageURL = URL(string: frontArt) {
-                        AsyncImage(url: imageURL) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView()
-                                    .frame(width: 50, height: 70)
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            case .failure:
-                                Image(systemName: "photo")
-                                    .foregroundColor(.white.opacity(0.5))
-                                    .frame(width: 50, height: 70)
-                            @unknown default:
-                                Color.gray.opacity(0.3)
-                            }
-                        }
-                        .frame(width: 50, height: 70)
-                        .cornerRadius(4)
-                        .clipped()
-                        .padding(.leading, 4)
-                    }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(card.name)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-
-                        if let subtitle = card.subtitle {
-                            Text(subtitle)
-                                .font(.caption2)
-                                .foregroundColor(.white.opacity(0.8))
-                                .lineLimit(1)
-                        }
-
-                        HStack(spacing: 4) {
-                            Text(style.icon)
-                                .font(.caption2)
-                            Text("×\(quantity)")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                        }
-                    }
-
-                    Spacer()
-
-                    if let priceString = card.marketPrice,
-                        let price = Double(priceString)
-                    {
-                        let adjustedPrice = price * style.priceMultiplier
-                        Text(String(format: "%.2f€", adjustedPrice * Double(quantity)))
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.trailing, 6)
+        HStack(spacing: 8) {
+            // Image de la carte
+            if let frontArt = card.frontArt, let imageURL = URL(string: frontArt) {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 50, height: 70)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .failure:
+                        Image(systemName: "photo")
+                            .foregroundColor(.white.opacity(0.5))
+                            .frame(width: 50, height: 70)
+                    @unknown default:
+                        Color.gray.opacity(0.3)
                     }
                 }
-            )
+                .frame(width: 50, height: 70)
+                .cornerRadius(6)
+                .clipped()
+                .shadow(color: .black.opacity(0.3), radius: 4)
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(card.name)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+
+                if let subtitle = card.subtitle {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.8))
+                        .lineLimit(1)
+                }
+
+                HStack(spacing: 4) {
+                    Text(style.icon)
+                        .font(.caption2)
+                    Text("×\(quantity)")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
+            }
+
+            Spacer()
+
+            if let priceString = card.marketPrice,
+                let price = Double(priceString)
+            {
+                let adjustedPrice = price * style.priceMultiplier
+                Text(String(format: "%.2f€", adjustedPrice * Double(quantity)))
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(Color.black.opacity(0.3))
+                    )
+            }
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            AppTheme.accentOrange,
+                            AppTheme.accentOrange.opacity(0.8)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+        )
+        .shadow(color: AppTheme.accentOrange.opacity(0.3), radius: 5, y: 2)
     }
 }
 

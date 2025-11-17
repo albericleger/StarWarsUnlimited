@@ -153,9 +153,35 @@ struct CardView: View {
             .padding(.horizontal, 4)
         }
         .padding(8)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(.systemBackground),
+                            Color(.systemBackground).opacity(0.95)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
     
     private func rarityBackgroundColor(for rarity: String) -> Color {
