@@ -12,6 +12,8 @@ struct Star_Wars_UnlimitedApp: App {
     @StateObject private var api = StarWarsUnlimitedAPI()
     @StateObject private var checkedCardsManager = CheckedCardsManager()
     @StateObject private var filterManager = FilterManager()
+    @StateObject private var exchangeCardsManager = ExchangeCardsManager()
+    @StateObject private var exchangePlayer2Manager = ExchangePlayer2Manager()
 
     var body: some Scene {
         WindowGroup {
@@ -21,6 +23,8 @@ struct Star_Wars_UnlimitedApp: App {
             .environmentObject(api)
             .environmentObject(checkedCardsManager)
             .environmentObject(filterManager)
+            .environmentObject(exchangeCardsManager)
+            .environmentObject(exchangePlayer2Manager)
             .task {
                 // Pré-chargement des cartes au démarrage de l'application
                 // Rafraîchir si vide ou si les prix sont obsolètes (> 6h)

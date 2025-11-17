@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EchangeView2: View {
     @EnvironmentObject private var api: StarWarsUnlimitedAPI
-    @StateObject private var exchangeCardsManager = ExchangeCardsManager()
+    @EnvironmentObject private var exchangeCardsManager: ExchangeCardsManager
     @EnvironmentObject private var filterManager: FilterManager
     @State private var searchText = ""
     @State private var selectedCard: Card?
@@ -494,5 +494,6 @@ struct EchangeMultiSelectRow: View {
         EchangeView2()
             .environmentObject(StarWarsUnlimitedAPI())
             .environmentObject(FilterManager())
+            .environmentObject(ExchangeCardsManager())
     }
 }

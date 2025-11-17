@@ -144,7 +144,8 @@ class ExchangeCardsManager: ObservableObject {
             if let card = cards.first(where: { $0.id == cardId }),
                let priceString = card.marketPrice,
                let price = Double(priceString) {
-                total += price * Double(entry.quantity)
+                let adjustedPrice = price * entry.style.priceMultiplier
+                total += adjustedPrice * Double(entry.quantity)
             }
         }
         return total
@@ -153,11 +154,12 @@ class ExchangeCardsManager: ObservableObject {
     // Obtenir le prix d'une carte spécifique
     func getCardPrice(card: Card) -> Double? {
         guard let priceString = card.marketPrice,
-              let price = Double(priceString) else {
+              let price = Double(priceString),
+              let entry = cardEntries[card.id] else {
             return nil
         }
-        let quantity = getQuantity(card.id)
-        return price * Double(quantity)
+        let adjustedPrice = price * entry.style.priceMultiplier
+        return adjustedPrice * Double(entry.quantity)
     }
 
     // Exporter en JSON pour partage/backup

@@ -5,8 +5,8 @@
 //  Created by Albéric Léger on 11/11/2025.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 struct SavedFilters: Codable {
     var selectedTypes: [String]
@@ -29,7 +29,8 @@ class FilterManager: ObservableObject {
 
     // Charger les filtres depuis UserDefaults
     func loadFilters() {
-        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else {
+        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey)
+        else {
             print("📁 Aucun filtre sauvegardé")
             return
         }
@@ -39,9 +40,13 @@ class FilterManager: ObservableObject {
             selectedTypes = Set(savedFilters.selectedTypes)
             selectedSets = Set(savedFilters.selectedSets)
             selectedAspects = Set(savedFilters.selectedAspects)
-            print("✅ Chargé \(selectedTypes.count) types, \(selectedSets.count) sets, \(selectedAspects.count) aspects")
+            print(
+                "✅ Chargé \(selectedTypes.count) types, \(selectedSets.count) sets, \(selectedAspects.count) aspects"
+            )
         } catch {
-            print("❌ Erreur lors du chargement des filtres: \(error.localizedDescription)")
+            print(
+                "❌ Erreur lors du chargement des filtres: \(error.localizedDescription)"
+            )
         }
     }
 
@@ -56,9 +61,13 @@ class FilterManager: ObservableObject {
         do {
             let data = try encoder.encode(savedFilters)
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
-            print("💾 Filtres sauvegardés: \(selectedTypes.count) types, \(selectedSets.count) sets, \(selectedAspects.count) aspects")
+            print(
+                "💾 Filtres sauvegardés: \(selectedTypes.count) types, \(selectedSets.count) sets, \(selectedAspects.count) aspects"
+            )
         } catch {
-            print("❌ Erreur lors de la sauvegarde des filtres: \(error.localizedDescription)")
+            print(
+                "❌ Erreur lors de la sauvegarde des filtres: \(error.localizedDescription)"
+            )
         }
     }
 

@@ -116,7 +116,7 @@ struct ExchangeCardPriceRow: View {
               let price = Double(priceString) else {
             return nil
         }
-        return price
+        return price * style.priceMultiplier
     }
 
     private var totalPrice: Double? {
