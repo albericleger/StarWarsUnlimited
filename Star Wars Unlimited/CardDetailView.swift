@@ -145,6 +145,37 @@ struct CardDetailView: View {
                                     .italic()
                             }
                         }
+
+                        // Bouton Cardmarket
+                        if let cardmarketURL = card.cardmarketSearchURL {
+                            Link(destination: cardmarketURL) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "eurosign.circle.fill")
+                                        .font(.title2)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Voir sur Cardmarket")
+                                            .fontWeight(.semibold)
+                                        Text("Prix européens en temps réel")
+                                            .font(.caption)
+                                            .opacity(0.8)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "arrow.up.right.square")
+                                        .font(.title3)
+                                }
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color.blue, Color.purple],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+                                .shadow(radius: AppTheme.shadowMedium)
+                            }
+                        }
                     }
                 }
                 .padding()

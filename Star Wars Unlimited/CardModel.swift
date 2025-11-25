@@ -148,4 +148,26 @@ extension Card {
         }
         return translatedAspects.joined(separator: " • ")
     }
+
+    // URL Cardmarket pour voir la carte
+    var cardmarketSearchURL: URL? {
+        // Formater : "Luke Skywalker, Jedi Knight" -> "Luke-Skywalker-Jedi-Knight"
+        var cardName = name
+        if let sub = subtitle, !sub.isEmpty {
+            cardName += " " + sub
+        }
+
+        let urlCardName = cardName
+            .replacingOccurrences(of: ",", with: "")
+            .replacingOccurrences(of: "'", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+            .replacingOccurrences(of: ":", with: "")
+            .replacingOccurrences(of: "!", with: "")
+            .replacingOccurrences(of: "?", with: "")
+            .replacingOccurrences(of: "  ", with: " ")
+            .replacingOccurrences(of: " ", with: "-")
+
+        let urlString = "https://www.cardmarket.com/fr/StarWarsUnlimited/Cards/\(urlCardName)"
+        return URL(string: urlString)
+    }
 }
