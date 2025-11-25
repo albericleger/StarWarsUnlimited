@@ -75,9 +75,11 @@ struct ExchangePriceBreakdownSheet<Manager: ExchangeManagerProtocol>: View {
                 }
             }
             .navigationTitle("Prix détaillés")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Fermer") {
                         dismiss()
                     }

@@ -14,6 +14,7 @@ struct AppTheme {
     static let accentOrange = Color(red: 1.0, green: 0.6, blue: 0.2)
     static let darkBackground = Color(red: 0.1, green: 0.1, blue: 0.15)
     static let cardBackground = Color(red: 0.15, green: 0.15, blue: 0.2)
+    static let searchBarBackground = Color(red: 0.35, green: 0.35, blue: 0.4)
 
     // Dégradés
     static let primaryGradient = LinearGradient(

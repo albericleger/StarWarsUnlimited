@@ -158,8 +158,8 @@ struct CardView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(.systemBackground),
-                            Color(.systemBackground).opacity(0.95)
+                            AppTheme.cardBackground,
+                            AppTheme.cardBackground.opacity(0.95)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing

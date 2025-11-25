@@ -31,7 +31,7 @@ struct Hot: View {
                     Spacer()
                     Image(systemName: "tray")
                         .font(.system(size: 60))
-                        .foregroundColor(.gray)
+                        .foregroundColor(AppTheme.primaryBlue.opacity(0.3))
                     Text("Aucune carte sélectionnée")
                         .font(.headline)
                         .foregroundColor(.secondary)
@@ -45,7 +45,7 @@ struct Hot: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("\(checkedCards.count) carte\(checkedCards.count > 1 ? "s" : "")")
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundColor(AppTheme.primaryBlue)
                         .padding(.horizontal)
                         .padding(.top)
 
@@ -78,7 +78,9 @@ struct Hot: View {
             }
         }
         .navigationTitle("Combat d'introduction: Hot")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
         .sheet(isPresented: $showingCardDetail) {
             if let card = selectedCard {
                 CardDetailView(card: card)

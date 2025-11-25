@@ -171,11 +171,11 @@ struct ContentView: View {
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)
-                                    .background(Color.red)
+                                    .background(AppTheme.accentOrange)
                                     .clipShape(Circle())
                             }
                         }
-                        .foregroundColor(.blue)
+                        .foregroundColor(AppTheme.primaryBlue)
                     }
                 }
                 .padding()
@@ -191,28 +191,30 @@ struct ContentView: View {
                     VStack(spacing: 16) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.system(size: 60))
-                            .foregroundColor(.red)
+                            .foregroundColor(AppTheme.accentOrange)
                         Text("Erreur")
                             .font(.title2)
                             .fontWeight(.bold)
                         Text(errorMessage)
                             .multilineTextAlignment(.center)
                             .foregroundColor(.secondary)
-                        Button("Réessayer") {
+                        Button(action: {
                             Task {
                                 await api.fetchAllCards()
                             }
+                        }) {
+                            Text("Réessayer")
                         }
-                        .buttonStyle(.borderedProminent)
+                        .primaryButtonStyle()
                     }
                     .padding()
                     Spacer()
                 } else if filteredCards.isEmpty && !api.cards.isEmpty {
                     Spacer()
-                    VStack(spacing: 16) {
+                    VStack(spacing: 20) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 60))
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppTheme.primaryBlue.opacity(0.5))
                         Text("Aucun résultat")
                             .font(.title2)
                             .fontWeight(.bold)
@@ -260,9 +262,11 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Star Wars Unlimited")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .automatic) {
                     if !checkedCardsManager.checkedCards.isEmpty {
                         Menu {
                             Button(action: {
@@ -305,7 +309,7 @@ struct ContentView: View {
                     }
                 }
 
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button(action: {
                         Task {
                             await api.fetchAllCards()
@@ -377,8 +381,8 @@ struct SearchBar: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .background(AppTheme.searchBarBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
     }
 }
 
@@ -392,7 +396,7 @@ struct FilterSheet: View {
         NavigationStack {
             List {
                 // Section Sets
-                Section("Extensions") {
+                Section {
                     ForEach(ContentView.SetOption.allCases, id: \.self) { set in
                         MultiSelectRow(
                             title: set.rawValue,
@@ -406,10 +410,14 @@ struct FilterSheet: View {
                             }
                         }
                     }
+                } header: {
+                    Text("Extensions")
+                        .foregroundColor(AppTheme.primaryBlue)
+                        .fontWeight(.semibold)
                 }
 
                 // Section Aspects (Couleurs)
-                Section("Aspects") {
+                Section {
                     ForEach(ContentView.AspectOption.allCases, id: \.self) { aspect in
                         MultiSelectRow(
                             title: aspect.displayName,
@@ -423,10 +431,14 @@ struct FilterSheet: View {
                             }
                         }
                     }
+                } header: {
+                    Text("Aspects")
+                        .foregroundColor(AppTheme.primaryBlue)
+                        .fontWeight(.semibold)
                 }
 
                 // Section Types
-                Section("Types de cartes") {
+                Section {
                     ForEach(ContentView.FilterOption.allCases, id: \.self) { filter in
                         MultiSelectRow(
                             title: filter.rawValue,
@@ -440,22 +452,32 @@ struct FilterSheet: View {
                             }
                         }
                     }
+                } header: {
+                    Text("Types de cartes")
+                        .foregroundColor(AppTheme.primaryBlue)
+                        .fontWeight(.semibold)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.darkBackground)
             .navigationTitle("Filtres")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .destructiveAction) {
                     Button("Réinitialiser") {
                         selectedSets.removeAll()
                         selectedAspects.removeAll()
                         selectedFilters.removeAll()
                     }
+                    .foregroundColor(AppTheme.accentOrange)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Fermer") {
                         dismiss()
                     }
+                    .foregroundColor(AppTheme.primaryBlue)
                 }
             }
         }
@@ -483,7 +505,7 @@ struct MultiSelectRow: View {
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(AppTheme.primaryGreen)
                         .font(.title3)
                 }
             }

@@ -31,7 +31,7 @@ struct PriceBreakdownSheet: View {
                     Section {
                         HStack {
                             Image(systemName: "clock.arrow.circlepath")
-                                .foregroundColor(.blue)
+                                .foregroundColor(AppTheme.primaryBlue)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Dernière mise à jour des prix")
                                     .font(.caption)
@@ -49,7 +49,7 @@ struct PriceBreakdownSheet: View {
                 }
 
                 ForEach(cardsBySet, id: \.set) { setGroup in
-                    Section(header: Text(setDisplayName(setGroup.set))) {
+                    Section {
                         ForEach(setGroup.cards) { card in
                             CardPriceRow(
                                 card: card,
@@ -57,6 +57,10 @@ struct PriceBreakdownSheet: View {
                                 style: checkedCardsManager.getStyle(card.id)
                             )
                         }
+                    } header: {
+                        Text(setDisplayName(setGroup.set))
+                            .foregroundColor(AppTheme.primaryBlue)
+                            .fontWeight(.semibold)
                     }
                 }
 
@@ -70,17 +74,22 @@ struct PriceBreakdownSheet: View {
                         Text(String(format: "%.2f€", totalPrice))
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundColor(.green)
+                            .foregroundColor(AppTheme.primaryGreen)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.darkBackground)
             .navigationTitle("Prix détaillés")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Fermer") {
                         dismiss()
                     }
+                    .foregroundColor(AppTheme.primaryBlue)
                 }
             }
         }
@@ -142,7 +151,7 @@ struct CardPriceRow: View {
                         Text("×\(quantity)")
                             .font(.caption)
                             .fontWeight(.bold)
-                            .foregroundColor(.blue)
+                            .foregroundColor(AppTheme.primaryBlue)
                     }
                 }
 

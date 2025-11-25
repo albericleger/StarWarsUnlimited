@@ -115,7 +115,11 @@ struct First: View {
                 Spacer()
             }
         }
+        #if os(iOS)
         .navigationBarHidden(true)
+        #else
+        .navigationBarBackButtonHidden(true)
+        #endif
     }
 }
 

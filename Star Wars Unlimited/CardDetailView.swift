@@ -23,18 +23,18 @@ struct CardDetailView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     } placeholder: {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.3))
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                            .fill(AppTheme.cardBackground)
                             .aspectRatio(0.7, contentMode: .fit)
                             .overlay {
                                 Image(systemName: "photo")
                                     .font(.system(size: 60))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(AppTheme.primaryBlue.opacity(0.3))
                             }
                     }
                     .frame(maxHeight: 400)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+                    .shadow(radius: AppTheme.shadowMedium)
                     .onTapGesture {
                         if card.doubleSided {
                             withAnimation {
@@ -59,15 +59,9 @@ struct CardDetailView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .shadow(color: .blue.opacity(0.3), radius: 5, x: 0, y: 2)
+                            .background(AppTheme.primaryGradient)
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+                            .shadow(radius: AppTheme.shadowMedium)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
@@ -122,7 +116,7 @@ struct CardDetailView: View {
                             CardInfoSection(title: "Action Épique") {
                                 Text(epicAction)
                                     .font(.body)
-                                    .foregroundColor(.orange)
+                                    .foregroundColor(AppTheme.accentOrange)
                             }
                         }
 
@@ -156,12 +150,15 @@ struct CardDetailView: View {
                 .padding()
             }
             .navigationTitle("Détails")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Fermer") {
                         dismiss()
                     }
+                    .foregroundColor(AppTheme.primaryBlue)
                 }
             }
         }
@@ -188,12 +185,14 @@ struct CardInfoSection<Content: View>: View {
             Text(title)
                 .font(.headline)
                 .fontWeight(.semibold)
-            
+                .foregroundColor(AppTheme.primaryBlue)
+
             content
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(AppTheme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+        .shadow(radius: AppTheme.shadowLight)
     }
 }
 

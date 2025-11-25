@@ -20,29 +20,60 @@ struct StylePickerSheet: View {
                     Button(action: {
                         onStyleSelected(style)
                     }) {
-                        HStack {
+                        HStack(spacing: 16) {
                             Text(style.icon)
-                                .font(.title2)
-                            Text(style.rawValue)
-                                .foregroundColor(.primary)
+                                .font(.system(size: 28))
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(style.rawValue)
+                                    .foregroundColor(.primary)
+                                    .font(.body)
+                                    .fontWeight(.medium)
+
+                                Text(styleDescription(for: style))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
                             Spacer()
+
                             if style == currentStyle {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(AppTheme.primaryGreen)
+                                    .font(.title3)
                             }
                         }
+                        .padding(.vertical, 8)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.darkBackground)
             .navigationTitle("Style de carte")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Fermer") {
                         dismiss()
                     }
+                    .foregroundColor(AppTheme.primaryBlue)
                 }
             }
+        }
+    }
+
+    private func styleDescription(for style: CardStyle) -> String {
+        switch style {
+        case .normal:
+            return "Version standard"
+        case .hyperspace:
+            return "Edition Hyperspace"
+        case .showcase:
+            return "Version alternative"
+        case .foil:
+            return "Version premium"
         }
     }
 }

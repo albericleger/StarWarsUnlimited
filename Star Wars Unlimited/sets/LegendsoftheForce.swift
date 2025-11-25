@@ -12,6 +12,8 @@ struct LegendsoftheForce: View {
     @EnvironmentObject private var checkedCardsManager: CheckedCardsManager
     @State private var selectedCard: Card?
     @State private var showingCardDetail = false
+    @State private var showingStylePicker = false
+    @State private var cardForStyleChange: Card?
 
     private var checkedCards: [Card] {
         api.cards.filter { $0.set == "LOF" && checkedCardsManager.isChecked($0.id) }
@@ -29,7 +31,7 @@ struct LegendsoftheForce: View {
                     Spacer()
                     Image(systemName: "tray")
                         .font(.system(size: 60))
-                        .foregroundColor(.gray)
+                        .foregroundColor(AppTheme.primaryBlue.opacity(0.3))
                     Text("Aucune carte sélectionnée")
                         .font(.headline)
                         .foregroundColor(.secondary)
@@ -43,7 +45,7 @@ struct LegendsoftheForce: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("\(checkedCards.count) carte\(checkedCards.count > 1 ? "s" : "")")
                         .font(.headline)
-                        .foregroundColor(.blue)
+                        .foregroundColor(AppTheme.primaryBlue)
                         .padding(.horizontal)
                         .padding(.top)
 
@@ -53,6 +55,7 @@ struct LegendsoftheForce: View {
                                 card: card,
                                 isChecked: true,
                                 quantity: checkedCardsManager.getQuantity(card.id),
+                                style: checkedCardsManager.getStyle(card.id),
                                 onInfoTap: {
                                     selectedCard = card
                                     showingCardDetail = true
@@ -62,6 +65,10 @@ struct LegendsoftheForce: View {
                                 },
                                 onDecrement: {
                                     checkedCardsManager.decrementQuantity(card.id)
+                                },
+                                onStyleTap: {
+                                    cardForStyleChange = card
+                                    showingStylePicker = true
                                 }
                             )
                         }
@@ -71,10 +78,24 @@ struct LegendsoftheForce: View {
             }
         }
         .navigationTitle("Légende de la force")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
         .sheet(isPresented: $showingCardDetail) {
             if let card = selectedCard {
                 CardDetailView(card: card)
+            }
+        }
+        .sheet(isPresented: $showingStylePicker) {
+            if let card = cardForStyleChange {
+                StylePickerSheet(
+                    card: card,
+                    currentStyle: checkedCardsManager.getStyle(card.id),
+                    onStyleSelected: { newStyle in
+                        checkedCardsManager.setStyle(card.id, style: newStyle)
+                        showingStylePicker = false
+                    }
+                )
             }
         }
     }

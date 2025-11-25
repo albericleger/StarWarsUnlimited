@@ -13,15 +13,19 @@ struct ClasseurView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                
+            VStack(spacing: 20) {
+
                 // SOR - Mars 2024 (premier set)
                 NavigationLink(destination: Hot()) {
                     Image("Hot")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
                 
@@ -29,8 +33,12 @@ struct ClasseurView: View {
                     Image("secret")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
 
@@ -39,8 +47,12 @@ struct ClasseurView: View {
                     Image("légende de la force")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
 
@@ -49,8 +61,12 @@ struct ClasseurView: View {
                     Image("passage vitesse lumière")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
 
@@ -59,8 +75,12 @@ struct ClasseurView: View {
                     Image("l'ombre de la république")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
 
@@ -69,8 +89,12 @@ struct ClasseurView: View {
                     Image("ombre de la galaxy")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
 
@@ -79,15 +103,21 @@ struct ClasseurView: View {
                     Image("Spark of rebelion")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .cornerRadius(10)
-                        .shadow(radius: 4)
+                        .cornerRadius(AppTheme.cornerRadiusMedium)
+                        .shadow(radius: AppTheme.shadowMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                                .stroke(AppTheme.primaryBlue.opacity(0.2), lineWidth: 2)
+                        )
                 }
                 .padding(.horizontal)
             }
             .padding(.vertical)
         }
         .navigationTitle("Mes Classeurs")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
     }
 }
 
